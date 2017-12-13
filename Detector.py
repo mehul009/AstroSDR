@@ -60,6 +60,7 @@ class MyDynamicMplCanvas(MyMplCanvas):                # canvas for graph
         data = port.read_samples(1024 * 2 ** num)
 
     def update_figure(self):                            # dynamic graph
+        port.sample_rate = sr * 10 ** 6
         data = port.read_samples(1024 * 2 ** num)
         y, x = matplotlib.pyplot.psd(data, NFFT=1024, Fs=sr, Fc=k)               # psd of incoming data
         self.axes.cla()
@@ -122,12 +123,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):                 # main gui windo
         self.menuBar().addMenu(self.viewMenu)
 
         self.editmenu = QtWidgets.QMenu('&Edit', self)
+        self.editmenu.addAction('&Sample Rate', self.ChangeSampleRate)
+        self.editmenu.addAction('&Over Lap',self.OverLap)
         self.menuBar().addMenu(self.editmenu)
 
         self.help_menu = QtWidgets.QMenu('&Help', self)
         self.menuBar().addSeparator()
         self.menuBar().addMenu(self.help_menu)
         self.help_menu.addAction('&Zoom', self.infozoom)
+        self.help_menu.addAction('&Overlap', self.infoOverLap)
         self.help_menu.addAction('&About', self.about)
 
         cent_freq = QLabel('Central Frequency')          # input for center frequency
@@ -265,19 +269,36 @@ class ApplicationWindow(QtWidgets.QMainWindow):                 # main gui windo
     def closeEvent(self, ce):
         self.fileQuit()
 
-    def about(self):
+    def ChangeSampleRate(self):
+        i, okPressed = QInputDialog.getDouble(self, "Select Sample Rate", "Sample Rate:", 2.4)
+        if okPressed:
+            global sr
+            sr = i
+
+    def OverLap(self):
+        j, okPressed = QInputDialog.getDouble(self, "Select Over Lap", "Select Number :", 5)
+        if okPressed :
+            global num
+            num=j
+
+    def about(self):                     # information of software
         QtWidgets.QMessageBox.about(self, "About", """     Welcome to Simple Rtl-Sdr Software Made by <u><b>Mehul Sutariya</b></u> <br>
                                                         For <i>Radio Astronomy Project</i> for<br> 
                                                         <b>Sardar Vallabhbhai National Institute of Technology</b>,Surat <br>
                                                         <b><i> Aim:Detection of 21cm Hydrogen Line</i></b>
                                                         <br>Made in Python With RtlSdr,MatPlotLib,PeakUtils and PyQt5""")
 
-    def infozoom(self):
-        QtWidgets.QMessageBox.about(self, "About",""" Divide X-Axes into total 6 Part Which start From 0
+    def infozoom(self):           # information of Zoom
+        QtWidgets.QMessageBox.about(self, "Zoom",""" Divide X-Axes into total 6 Part Which start From 0
         (X-axes has total 6 part) and than Enter 
         The Start and End value and press Zoom button
           for REMOVE zoom press RESET""")
-    def changePosition(self):
+
+    def infoOverLap(self):                    # information of the overlap
+        QtWidgets.QMessageBox.about(self,"Over Lap", """ Total Over Laping in 2 Power Selected_Number 
+        i.e : Slected_Number = 5 Then OverLaping is 32 Time """)
+
+    def changePosition(self):                    # show coordinate
         self.pos.setText(str(coordinate))
 
 
