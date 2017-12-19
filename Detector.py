@@ -7,14 +7,13 @@ from PyQt5 import QtCore, QtWidgets
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib
+import matplotlib.pyplot as plt
 import sys
 import rtlsdr
 import peakutils
-matplotlib.use('Qt5Agg')
 
-coordinate = 0
-port = rtlsdr.RtlSdr()
-sr = 2.4                                     # sample rate in maga Hz
+port = rtlsdr.RtlSdr()              # configuration of devise
+sr = 2.4                                     # sample rate in mega Hz
 port.sample_rate = sr * 10**6
 cf = 1                                       # central freq in mega Hz
 k = cf
@@ -22,19 +21,22 @@ port.center_freq = cf * 10 ** 6
 freq_cor = 1000                             # frequency correction
 port.freq_correction = freq_cor
 port.gain = 'auto'
+
 num = 5      # 2**num work as overlapping constant
 
 start = 0	 # Zooming constant
 end = 6
 div = 1024/6
 
+coordinate = 0   # coordinate constant
+
 
 class MyMplCanvas(FigureCanvas):         # made a canvas
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         global fig
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        fig = Figure(figsize=(width, height), dpi=dpi)       # make figure
+        self.axes = fig.add_subplot(111)                      # subplot in this figure
 
         self.compute_initial_figure()
 
@@ -54,20 +56,24 @@ class MyDynamicMplCanvas(MyMplCanvas):                # canvas for graph
         MyMplCanvas.__init__(self, *args, **kwargs)
         timer = QtCore.QTimer(self)                    # timer for dynamic graph
         timer.timeout.connect(self.update_figure)
-        timer.start(1000)
+        timer.start(2)
 
     def compute_initial_figure(self):
         data = port.read_samples(1024 * 2 ** num)
 
     def update_figure(self):                            # dynamic graph
-        port.sample_rate = sr * 10 ** 6
+        global data
         data = port.read_samples(1024 * 2 ** num)
+        global x
+        global y
         y, x = matplotlib.pyplot.psd(data, NFFT=1024, Fs=sr, Fc=k)               # psd of incoming data
         self.axes.cla()
         self.axes.set_xlabel('Central Frequency = '+str('%.3f' % k)+' MHz')
         self.axes.set_ylabel('Power  Spectrum Value')
         self.axes.plot(x[int(start*div):int(end*div)], y[int(start*div):int(end*div)], 'r')        # plot the data
         ind = peakutils.indexes(y[int(start*div):int(end*div)], thres=0.5, min_dist=30)       # find the peak
+        global xx
+        global yy
         xx = []
         yy = []
         x1 = x[int(start*div):int(end*div)]
@@ -94,7 +100,6 @@ class MyDynamicMplCanvas(MyMplCanvas):                # canvas for graph
                 yd = event.ydata
                 coordinate = 'x = ' + str(xd) + '  : y = ' + str(yd)
 
-
         cid = fig.canvas.mpl_connect('button_press_event', onclick)
         binding_id = fig.canvas.mpl_connect('motion_notify_event', on_move)
         self.draw()
@@ -111,6 +116,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):                 # main gui windo
         self.setWindowTitle("RADIO ASTRONOMY PROJECT")
 
         self.file_menu = QtWidgets.QMenu('&File', self)         # make a menu bar
+        self.file_menu.addAction('&Save', self.savefig)
         self.file_menu.addAction('&Quit', self.fileQuit, QtCore.Qt.CTRL + QtCore.Qt.Key_Q)
         self.menuBar().addMenu(self.file_menu)
 
@@ -263,6 +269,26 @@ class ApplicationWindow(QtWidgets.QMainWindow):                 # main gui windo
         cf = h
         k = cf
 
+    def savefig(self):
+        plt.figure(1)
+        plt.cla()
+        plt.plot(x[int(start*div):int(end*div)], y[int(start*div):int(end*div)], 'r')
+        xt, zz = plt.xticks()
+        yt, zz = plt.yticks()
+        plt.plot(xx, yy, '*')
+        ln = len(xx)
+        sf = 0
+        txt = 'peak X:Y'
+        while sf < ln :
+            xx1=xx[sf]
+            yy1=yy[sf]
+            ax = str('%.2f' % xx1) + ' : ' + str('%.5f' % yy1)
+            txt = txt + '\n' + str(ax)
+            sf = sf+1
+        plt.text(xt[-2], yt[-2], txt, fontsize=10)
+        plt.savefig('psd of central frequency ' + str(k) + '.png')
+        plt.close()
+
     def fileQuit(self):
         self.close()
 
@@ -274,6 +300,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):                 # main gui windo
         if okPressed:
             global sr
             sr = i
+            port.sample_rate = sr * 10 ** 6
 
     def OverLap(self):
         j, okPressed = QInputDialog.getDouble(self, "Select Over Lap", "Select Number :", 5)
@@ -286,7 +313,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):                 # main gui windo
                                                         For <i>Radio Astronomy Project</i> for<br> 
                                                         <b>Sardar Vallabhbhai National Institute of Technology</b>,Surat <br>
                                                         <b><i> Aim:Detection of 21cm Hydrogen Line</i></b>
-                                                        <br>Made in Python With RtlSdr,MatPlotLib,PeakUtils and PyQt5""")
+                                                        <br>Made in Python With RtlSdr,MatPlotLib,PeakUtils and PyQt5<br>
+                                                        Thanks to Ankit Virani""")
 
     def infozoom(self):           # information of Zoom
         QtWidgets.QMessageBox.about(self, "Zoom",""" Divide X-Axes into total 6 Part Which start From 0
@@ -295,7 +323,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):                 # main gui windo
           for REMOVE zoom press RESET""")
 
     def infoOverLap(self):                    # information of the overlap
-        QtWidgets.QMessageBox.about(self,"Over Lap", """ Total Over Laping in 2 Power Selected_Number 
+        QtWidgets.QMessageBox.about(self, "Over Lap", """ Total Over Laping in 2 Power Selected_Number 
         i.e : Slected_Number = 5 Then OverLaping is 32 Time """)
 
     def changePosition(self):                    # show coordinate
