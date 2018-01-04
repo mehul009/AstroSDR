@@ -138,6 +138,8 @@ class MyDynamicMplCanvas(MyMplCanvas):                # canvas for graph
 class ApplicationWindow(QMainWindow):                 # main gui window
     def __init__(self):
         QMainWindow.__init__(self)
+        if os.path.isfile('logo.png'):
+            self.setWindowIcon(QIcon('logo.png'))
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.changePosition)
         self.timer.start(1)
@@ -339,14 +341,14 @@ class ApplicationWindow(QMainWindow):                 # main gui window
     def closeEvent(self, ce):
         self.fileQuit()
 
-    def ChangeSampleRate(self):
+    def ChangeSampleRate(self):               # for change in sample rate
         i, okPressed = QInputDialog.getDouble(self, "Select Sample Rate", "Sample Rate:", 2.4)
         if okPressed:
             global sr
             sr = i
             port.sample_rate = sr * 10 ** 6
 
-    def OverLap(self):
+    def OverLap(self):                     # for change in over lapping constant
         j, okPressed = QInputDialog.getDouble(self, "Select Over Lap", "Select Number :", 5)
         if okPressed:
             global num
@@ -361,7 +363,7 @@ class ApplicationWindow(QMainWindow):                 # main gui window
                                                         Thanks to Ankit Virani""")
 
     def infozoom(self):           # information of Zoom
-        QMessageBox.about(self, "Zoom",""" Divide X-Axes into total 6 Part Which start From 0
+        QMessageBox.about(self, "Zoom", """ Divide X-Axes into total 6 Part Which start From 0
         (X-axes has total 6 part) and than Enter 
         The Start and End value and press Zoom button
           for REMOVE zoom press RESET""")
