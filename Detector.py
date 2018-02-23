@@ -88,14 +88,14 @@ class MyDynamicMplCanvas(MyMplCanvas):                # canvas for graph
             yy.append(y1[aa])
         self.axes.plot(xx, yy, '*')  # plot a pick
 
-        if save == 'yes':
+                if save == 'yes':
             year, month, day, hour, min, sec, wday, yday, isdst = time.localtime()  # time for save file
 
         # if not exist than make directory path for save file
             if not os.path.exists(
-                '/home/mehul09/astronomy/' + 'year ' + str(year) + '/' + 'month ' + str(month) + '/' + 'day '
+                'astronomy/' + 'year ' + str(year) + '/' + 'month ' + str(month) + '/' + 'day '
                                            + str(day) + '/' + 'hour ' + str(hour) + '/'):
-                os.makedirs('/home/mehul09/astronomy/' + 'year ' + str(year) + '/' + 'month ' + str(month) + '/'
+                os.makedirs('astronomy/' + 'year ' + str(year) + '/' + 'month ' + str(month) + '/'
                             + 'day ' + str(day) + '/' + 'hour ' + str(hour) + '/')
 
             raws = pd.Series(data)  # make a series
@@ -109,9 +109,10 @@ class MyDynamicMplCanvas(MyMplCanvas):                # canvas for graph
             data_frame = pd.DataFrame(frame)  # make data frame
 
         # save file in h5 formate for highspeed and high compression
-            data_frame.to_hdf('/home/mehul09/astronomy/' + 'year ' + str(year) + '/' + 'month ' + str(month) + '/' +
+            data_frame.to_hdf('astronomy/' + 'year ' + str(year) + '/' + 'month ' + str(month) + '/' +
                               'day ' + str(day) + '/' + 'hour ' + str(hour) + '/' + 'minute ' + str(min) + '.h5',
                               key='int', mode='a', formate='table(t)', append=True, complevel=1, fletcher32=True)
+
 
         def onclick(event):
             global ty
