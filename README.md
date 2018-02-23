@@ -11,7 +11,7 @@ Changing SampleRate and also OverLapping is availble in Edit menu
 
 i also add a save option in file menu for the save shown figure and peak value in .png file ,simply click screen shot  in file menu and your image is save in the directory where you run this coad(name of file is 'psd of central frequency <central _freq> .png' )
 
-New feature for save incoming raw data in HDF5 formate are add for , for active this feature go in file menu and active a save data chekbox and see in your home/astronomy directory for saved data.(only work in linux, for windos and mac simply change the pathname)
+New feature for save incoming raw data in HDF5 formate are add for , for active this feature go in file menu and active a save data chekbox and see in your 'present work directory'/astronomy directory for saved data.
 
 For the logo , You wanted for the application ,Please convert it into the .png file and rename it as 'logo' (final will be 'logo.png')(Work for linux,Probabaly for windos and mac also)
 
