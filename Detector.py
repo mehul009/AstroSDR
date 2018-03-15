@@ -88,7 +88,7 @@ class MyDynamicMplCanvas(MyMplCanvas):                # canvas for graph
             yy.append(y1[aa])
         self.axes.plot(xx, yy, '*')  # plot a pick
 
-                if save == 'yes':
+        if save == 'yes':
             year, month, day, hour, min, sec, wday, yday, isdst = time.localtime()  # time for save file
 
         # if not exist than make directory path for save file
