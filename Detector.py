@@ -196,6 +196,7 @@ class ApplicationWindow(QMainWindow):                 # main gui window
         sld.setGeometry(10, 650, 1500, 30)
         sld.valueChanged.connect(self.scroll)
         self.pos = QLabel('Position')
+        global sld
 
         self.shortcut = QShortcut(QKeySequence("Enter"), self)      # connect enter btn to input tab
         self.shortcut.activated.connect(self.on_open)
@@ -277,6 +278,7 @@ class ApplicationWindow(QMainWindow):                 # main gui window
             h = cc
         cf = h
         k = cf
+        sld.setValue(0)       # set slider value at zero when change in frequency
 
     def zoomr(self):
         global end
@@ -306,6 +308,7 @@ class ApplicationWindow(QMainWindow):                 # main gui window
 
         cf = h
         k = cf
+        sld.setValue(0)       # set slider value at zero when change in frequency
 
     def savedata(self, state):
         global save
