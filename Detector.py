@@ -192,11 +192,11 @@ class ApplicationWindow(QMainWindow):                 # main gui window
         self.reset = QPushButton('Reset')
         self.reset.clicked.connect(self.resetr)
 
+        global sld
         sld = QSlider(Qt.Horizontal, self)           # slider for change the value
         sld.setGeometry(10, 650, 1500, 30)
         sld.valueChanged.connect(self.scroll)
         self.pos = QLabel('Position')
-        global sld
 
         self.shortcut = QShortcut(QKeySequence("Enter"), self)      # connect enter btn to input tab
         self.shortcut.activated.connect(self.on_open)
