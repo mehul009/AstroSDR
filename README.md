@@ -1,4 +1,4 @@
-# frequency_detector_rtlsdr
+# AstroSDR
 Radio frequency detector software for RtlSdr. 
 It is written in python for astronomical use which is commonly use in short or college term projects. 
 To run this software we need pyrtlsdr, pyqt5, matplotlib, pickutils installed in our system ,if not then please install via pip or conda.
